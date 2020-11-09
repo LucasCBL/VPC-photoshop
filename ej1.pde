@@ -9,7 +9,9 @@ import gab.opencv.*;
  */
 converter menu;
 void setup() {
-  size(displayWidth, displayHeight);
+  int window_height = displayHeight - (int)(0.05 * displayWidth);
+  int window_width = (int)displayWidth;
+  surface.setSize(window_width, window_height);
   surface.setResizable(true);
   
   // The image file must be in the data folder of the current sketch 
@@ -19,6 +21,7 @@ void setup() {
   int[] a = {0, 255};
   int[] b = {255, 0};
   menu.brightness(2, a, b);
+  background(125);
 }
 
 

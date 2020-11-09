@@ -5,9 +5,11 @@ class converter{
   public PImage img;
   private ArrayList<PImage> historial;
   private PImage histogram;
+  private int min_val;
+  private int max_val;
   public converter(String file){
      img = loadImage(file);
-     histogram = createImage(displayWidth - displayWidth / 10, displayHeight - displayHeight/20, RGB);
+     histogram = createImage((int)(width * 0.9), (int)(height * 0.95), RGB);
      historial = new ArrayList<PImage>();
   }
   
@@ -16,6 +18,7 @@ class converter{
     for(int i = 0; i < img.pixels.length; i++) {
      img.pixels[i] = color(red(img.pixels[i]) * 0.299 + blue(img.pixels[i]) * 0.114 + green(img.pixels[i]) * 0.587);
     }
+    reload_histogram();
     return img;
   }  
   
@@ -37,6 +40,7 @@ class converter{
       }
     }
     img = convert_to_table(Vout.toArray());
+    reload_histogram();
     return img;
   }
   
@@ -48,8 +52,34 @@ class converter{
     for(int i = 0; i < img.pixels.length; i++){
       values[(int)red(img.pixels[i])]++; 
     }
-    // ya tenemos los numeros del histograma, ahora es necesario crear la imagen de este para imprimirlo por pantalla.
-  
+    
+    int min = 0;
+    while(values[min] == 0) {
+      min++;
+    }
+    min_val = min;
+    
+    int max = 255;
+    while(values[max] == 0) {
+      max--;
+    }
+    max_val = max;
+    
+    int hist_max = max(values);
+    stroke(0);
+
+    float space = histogram.width / 257;
+    strokeWeight(space / 2);
+    float unit_height = (histogram.height * 0.9) / hist_max;
+    for(int i = 0; i < 256; i++) {
+      line(space * (i + 1.5), height - (histogram.height * 0.05), space * (i + 1.5), height - (values[i] * unit_height) - (histogram.height * 0.05));
+      
+    }
+    
+    print(histogram.height +" asdasd  " + histogram.width + "\n");
+    histogram = get(0, height, histogram.width,  height - histogram.height);
+    
+    
   }
   
   private PImage convert_to_table(Object[] Vout){
@@ -60,11 +90,12 @@ class converter{
     return converted_img;
   }
   public void drawImage() {
-    image(img, displayWidth / 10, displayHeight/20);
+    image(img, width - histogram.width, height - histogram.height);
   }
   
   public void drawHistogram() {
     // a la izquierda hay que dibujar la información de la imagen
-    image(histogram, displayWidth / 10, displayHeight/20);
+
+    image(histogram, width - histogram.width, height - histogram.height);
   }
 }

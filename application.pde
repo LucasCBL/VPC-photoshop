@@ -7,7 +7,7 @@ class converter{
   private PImage histogram;
   public converter(String file){
      img = loadImage(file);
-     histogram = createImage(displayWidth, displayHeight - displayHeight/20, RGB);
+     histogram = createImage(displayWidth - displayWidth / 10, displayHeight - displayHeight/20, RGB);
      historial = new ArrayList<PImage>();
   }
   
@@ -40,6 +40,18 @@ class converter{
     return img;
   }
   
+  void reload_histogram(){
+    int[] values = new int[256];
+    for(int i = 0 ; i < 256; i++) {
+      values[i] = 0;
+    }
+    for(int i = 0; i < img.pixels.length; i++){
+      values[(int)red(img.pixels[i])]++; 
+    }
+    // ya tenemos los numeros del histograma, ahora es necesario crear la imagen de este para imprimirlo por pantalla.
+  
+  }
+  
   private PImage convert_to_table(Object[] Vout){
     PImage converted_img = img;
     for(int i = 0; i < converted_img.pixels.length; i++) {
@@ -48,10 +60,11 @@ class converter{
     return converted_img;
   }
   public void drawImage() {
-    image(img, 0, displayHeight/20);
+    image(img, displayWidth / 10, displayHeight/20);
   }
   
-   public void drawHistogram() {
-    image(histogram, 0, displayHeight/20);
+  public void drawHistogram() {
+    // a la izquierda hay que dibujar la información de la imagen
+    image(histogram, displayWidth / 10, displayHeight/20);
   }
 }

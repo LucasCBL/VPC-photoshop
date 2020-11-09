@@ -9,7 +9,9 @@ import gab.opencv.*;
  */
 converter menu;
 void setup() {
-  size(640, 360);
+  size(displayWidth, displayHeight);
+  surface.setResizable(true);
+  
   // The image file must be in the data folder of the current sketch 
   // to load successfully
   menu = new converter("IceKing.png");
@@ -23,5 +25,6 @@ void setup() {
 
 void draw() {
   // Displays the image at its actual size at point (0,0)
-  menu.draw(); 
+  menu.drawImage(); 
+  menu.drawHistogram();
 }

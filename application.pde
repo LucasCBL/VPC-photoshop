@@ -4,9 +4,10 @@ import java.util.*;
 class converter{
   public PImage img;
   private ArrayList<PImage> historial;
-  
+  private PImage histogram;
   public converter(String file){
      img = loadImage(file);
+     histogram = createImage(displayWidth, displayHeight - displayHeight/20, RGB);
      historial = new ArrayList<PImage>();
   }
   
@@ -46,7 +47,11 @@ class converter{
     }
     return converted_img;
   }
-  public void draw() {
-    image(img, 0, 0);
+  public void drawImage() {
+    image(img, 0, displayHeight/20);
+  }
+  
+   public void drawHistogram() {
+    image(histogram, 0, displayHeight/20);
   }
 }

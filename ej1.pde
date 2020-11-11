@@ -13,7 +13,7 @@ void setup() {
   int window_width = (int)displayWidth;
   surface.setSize(window_width, window_height);
   surface.setResizable(true);
-   background(125);
+   background(255);
   // The image file must be in the data folder of the current sketch 
   // to load successfully
   menu = new converter("IceKing.png");
@@ -28,10 +28,7 @@ int i = 0;
 
 void draw() {
   // Displays the image at its actual size at point (0,0)
-   if(i < 1) {
-     menu.reload_histogram();
-     i++;
-   }
+   menu.reload_histogram();
    menu.drawImage();
-   menu.drawHistogram();
+   //menu.drawHistogram();
 }

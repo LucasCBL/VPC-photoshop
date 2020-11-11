@@ -11,9 +11,9 @@ class converter{
   private int drawable_y;
   public converter(String file){
      img = loadImage(file);
-     histogram = createImage((int)(width * 0.1), (int)(height * 0.1), RGB);
-     drawable_x = (int)(width * 0.9);
-     drawable_y = (int)(height * 0.95);
+     histogram = createImage(round(width * 0.29), round(height * 0.3), RGB);
+     drawable_x = round(width * 0.7);
+     drawable_y = round(height * 0.95);
      historial = new ArrayList<PImage>();
   }
   
@@ -49,13 +49,15 @@ class converter{
   }
   
   void reload_histogram(){
-    background(125);
+    background(255);
+    fill(200);
+    rect(5, (height * 0.05), histogram.width, histogram.height);
     int[] values = new int[256];
     for(int i = 0 ; i < 256; i++) {
       values[i] = 0;
     }
     for(int i = 0; i < img.pixels.length; i++){
-      values[(int)red(img.pixels[i])]++; 
+      values[round(red(img.pixels[i]))]++; 
     }
     
     int min = 0;
@@ -71,24 +73,24 @@ class converter{
     max_val = max;
     
     int hist_max = max(values);
-    stroke(255);
+    stroke(0);
 
-    float space = histogram.width / 257;
-    strokeWeight(space / 2);
+    float space = histogram.width / 256.0;
+    strokeWeight(space/2);
     float unit_height = (histogram.height * 0.9) / hist_max;
     for(int i = 0; i < 256; i++) {
-      line(space * (i + 1.5), height/2 , space * (i + 1.5), height/2 - (values[i] * unit_height) - (histogram.height * 0.05));
+      line(space * i + 5, (height * 0.05 + histogram.height) , space * i + 5, (height * 0.05 + histogram.height) - (values[i] * unit_height) - (histogram.height * 0.05));
     }
     delay(100);
     histogram = get(0, height, histogram.width,  histogram.height);
     
-    
+    print("Histrogram width " + histogram.width + " width " + (width * 0.3) + "\nSpace: " + space + "\n");
   }
   
   private PImage convert_to_table(Object[] Vout){
     PImage converted_img = img;
     for(int i = 0; i < converted_img.pixels.length; i++) {
-      converted_img.pixels[i] = color((float)Vout[(int)red(img.pixels[i])]);
+      converted_img.pixels[i] = color((float)Vout[round(red(img.pixels[i]))]);
     }
     return converted_img;
   }
@@ -98,6 +100,6 @@ class converter{
   
   public void drawHistogram() {
     // a la izquierda hay que dibujar la información de la imagen
-    image(histogram, width - histogram.width, height - histogram.height);
+    image(histogram, 0, height/4, width - histogram.width, height - histogram.height);
   }
 }

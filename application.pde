@@ -7,9 +7,13 @@ class converter{
   private PImage histogram;
   private int min_val;
   private int max_val;
+  private int drawable_x;
+  private int drawable_y;
   public converter(String file){
      img = loadImage(file);
-     histogram = createImage((int)(width * 0.9), (int)(height * 0.95), RGB);
+     histogram = createImage((int)(width * 0.1), (int)(height * 0.1), RGB);
+     drawable_x = (int)(width * 0.9);
+     drawable_y = (int)(height * 0.95);
      historial = new ArrayList<PImage>();
   }
   
@@ -45,6 +49,7 @@ class converter{
   }
   
   void reload_histogram(){
+    background(125);
     int[] values = new int[256];
     for(int i = 0 ; i < 256; i++) {
       values[i] = 0;
@@ -66,18 +71,16 @@ class converter{
     max_val = max;
     
     int hist_max = max(values);
-    stroke(0);
+    stroke(255);
 
     float space = histogram.width / 257;
     strokeWeight(space / 2);
     float unit_height = (histogram.height * 0.9) / hist_max;
     for(int i = 0; i < 256; i++) {
-      line(space * (i + 1.5), height - (histogram.height * 0.05), space * (i + 1.5), height - (values[i] * unit_height) - (histogram.height * 0.05));
-      
+      line(space * (i + 1.5), height/2 , space * (i + 1.5), height/2 - (values[i] * unit_height) - (histogram.height * 0.05));
     }
-    
-    print(histogram.height +" asdasd  " + histogram.width + "\n");
-    histogram = get(0, height, histogram.width,  height - histogram.height);
+    delay(100);
+    histogram = get(0, height, histogram.width,  histogram.height);
     
     
   }
@@ -90,12 +93,11 @@ class converter{
     return converted_img;
   }
   public void drawImage() {
-    image(img, width - histogram.width, height - histogram.height);
+    image(img, width - drawable_x, height - drawable_y);
   }
   
   public void drawHistogram() {
     // a la izquierda hay que dibujar la información de la imagen
-
     image(histogram, width - histogram.width, height - histogram.height);
   }
 }

@@ -5,12 +5,15 @@ class converter{
   public PImage img;
   private ArrayList<PImage> historial;
   private PImage histogram;
+  private PImage difference;
+  private PImage original;
   private int min_val;
   private int max_val;
   private int drawable_x;
   private int drawable_y;
   public converter(String file){
      img = loadImage(file);
+     original = loadImage(file);
      histogram = createImage(round(width * 0.29), round(height * 0.3), RGB);
      drawable_x = round(width * 0.7);
      drawable_y = round(height * 0.95);
@@ -140,5 +143,18 @@ class converter{
   public void drawHistogram() {
     // a la izquierda hay que dibujar la información de la imagen
     image(histogram, 0, height/4, width - histogram.width, height - histogram.height);
+  }
+    public PImage difference(int umbral){
+    difference = img;
+    for(int i = 0; i < difference.pixels.length; i++){
+      difference.pixels[i] = abs(red(original.pixels[i]) - red(difference.pixels[i])) > umbral ?  color(255,0,0) : original.pixels[i];
+    }
+
+    return difference;
+  }
+  
+  public void drawTwoImages(){
+    image(original, width - drawable_x, height - drawable_y + img.height);  
+    image(difference, width - drawable_x + original.width, height + drawable_y + img.height);
   }
 }

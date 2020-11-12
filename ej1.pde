@@ -21,6 +21,7 @@ void setup() {
   int[] a = {0, 255};
   int[] b = {255, 0};
   //menu.brightness(2, a, b);
+  menu.difference(50);
  
 }
 
@@ -31,5 +32,6 @@ void draw() {
    menu.reload_histogram();
    menu.reload_acc_histogram();
    menu.drawImage();
+   menu.drawTwoImages();
    //menu.drawHistogram();
 }

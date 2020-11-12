@@ -17,11 +17,14 @@ void setup() {
   // The image file must be in the data folder of the current sketch 
   // to load successfully
   menu = new converter("IceKing.png");
+   menu.second_img = menu.img.copy();
   menu.to_grayscale();
-  int[] a = {0, 255};
-  int[] b = {255, 0};
-  //menu.brightness(2, a, b);
-  menu.difference(50);
+  int[] a = {0, 0};
+  int[] b = {255, 100};
+ 
+ 
+  menu.brightness(2, a, b);
+  menu.difference(20);
  
 }
 
@@ -32,6 +35,7 @@ void draw() {
    menu.reload_histogram();
    menu.reload_acc_histogram();
    menu.drawImage();
+
    menu.drawTwoImages();
    //menu.drawHistogram();
 }

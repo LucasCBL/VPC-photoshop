@@ -29,6 +29,7 @@ int i = 0;
 void draw() {
   // Displays the image at its actual size at point (0,0)
    menu.reload_histogram();
+   menu.reload_acc_histogram();
    menu.drawImage();
    //menu.drawHistogram();
 }

@@ -49,7 +49,6 @@ class converter{
   }
   
   void reload_histogram(){
-    background(255);
     fill(200);
     rect(5, (height * 0.05), histogram.width, histogram.height);
     int[] values = new int[256];
@@ -80,6 +79,46 @@ class converter{
     float unit_height = (histogram.height * 0.9) / hist_max;
     for(int i = 0; i < 256; i++) {
       line(space * i + 5, (height * 0.05 + histogram.height) , space * i + 5, (height * 0.05 + histogram.height) - (values[i] * unit_height) - (histogram.height * 0.05));
+    }
+    delay(100);
+    histogram = get(0, height, histogram.width,  histogram.height);
+    
+    print("Histrogram width " + histogram.width + " width " + (width * 0.3) + "\nSpace: " + space + "\n");
+  }
+  
+  void reload_acc_histogram(){
+    fill(200);
+    rect(5, (height * 0.05 + histogram.height), histogram.width, histogram.height);
+    int[] values = new int[256];
+    for(int i = 0 ; i < 256; i++) {
+      values[i] = 0;
+    }
+    for(int i = 0; i < img.pixels.length; i++){
+      values[round(red(img.pixels[i]))]++; 
+    }
+    
+    int min = 0;
+    while(values[min] == 0) {
+      min++;
+    }
+    min_val = min;
+    
+    int max = 255;
+    while(values[max] == 0) {
+      max--;
+    }
+    max_val = max;
+    
+    int hist_max = img.pixels.length;
+    stroke(0);
+
+    float space = histogram.width / 256.0;
+    strokeWeight(space/2);
+    float unit_height = (histogram.height * 0.9) / hist_max;
+    int total = 0;
+    for(int i = 0; i < 256; i++) {
+      total += values[i];
+      line(space * i + 5, (height * 0.05 + 2 * histogram.height) , space * i + 5, (height * 0.05 + 2 * histogram.height) - (total * unit_height) - (histogram.height * 0.05));
     }
     delay(100);
     histogram = get(0, height, histogram.width,  histogram.height);

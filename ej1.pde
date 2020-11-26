@@ -29,11 +29,17 @@ void setup() {
   menu = new converter("IceKing.png");
    menu.second_img = menu.img.copy();
   menu.to_grayscale();
-  int[] a = {0, 0};
-  int[] b = {255, 100};
+  int[] a = {0, 255};
+  int[] b = {255, 0};
  
- 
-  menu.equalize_hist();
+  //menu.brightness(2, a, b );
+  //int[] c = {0, 40, 255};
+  //int[] d = {0, 255, 255};
+  //menu.brightness(2, c, d );
+  
+  menu.load_second_image("descarga.jpg");
+  menu.specify_hist();
+  //menu.equalize_hist();
 }
 
 int i = 0;

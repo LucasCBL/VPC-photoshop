@@ -1,6 +1,6 @@
 
 import java.util.*;
-
+// entropy
 class converter{
   public PImage img;
   private ArrayList<PImage> historial;
@@ -22,6 +22,9 @@ class converter{
   
   public void load_second_image(String file){
      second_img = loadImage(file);
+     for(int i = 0; i < second_img.pixels.length; i++) {
+     second_img.pixels[i] = color(red(second_img.pixels[i]) * 0.299 + blue(second_img.pixels[i]) * 0.114 + green(second_img.pixels[i]) * 0.587);
+    }
   }
   
   public PImage to_grayscale() {
@@ -61,9 +64,69 @@ class converter{
   public PImage specify_hist() {
     //primero convertir histogramas acumulativos en proporciones tal que acch= acch * 255/tamaño img
     // segundo vout[i] = acch2.find_valor_mas_cercano(acch[i])
+    int[] Vout = new int[256];
+    float[] acc_hist = new float[256];
+    float[] acc_hist_2 = new float[256];
+    for(int i = 0 ; i < 256; i++) {
+      acc_hist[i] = 0;
+      acc_hist_2[i] = 0;
+    }
+    for(int i = 0; i < img.pixels.length; i++){
+      acc_hist[round(red(img.pixels[i]))]++; 
+    }
+  
+    for(int i = 0; i < second_img.pixels.length; i++){
+      acc_hist_2[round(red(second_img.pixels[i]))]++; 
+    }
     
+    for(int i = 1; i < 256; i++) {
+      acc_hist[i] = acc_hist[i] + acc_hist[i - 1];
+      acc_hist_2[i] = acc_hist_2[i] + acc_hist_2[i - 1];
+    }
+    for(int i = 0; i < acc_hist.length; i++) {
+      acc_hist[i] = (acc_hist[i] * 255.0) / (float)img.pixels.length;
+      acc_hist_2[i] = (acc_hist_2[i] * 255.0) / (float)second_img.pixels.length;
+    }
+    
+    for(int i = 0; i < 256; i++) {
+      Vout[i] = find_closest(acc_hist[i], acc_hist_2);
+      print(Vout[i] + "\n");
+    }
+    img = convert_to_table(Vout);
     return img;
   }
+  
+  private int find_closest(float target, float[] search_array) {
+    boolean found = false;
+    int pos = search_array.length / 2; 
+    while(!found) {
+      if(target == search_array[pos]){
+         return pos;
+      } else if(target >= search_array[pos] && target <= search_array[pos + 1]){
+        found = true;  
+      } else if(target <= search_array[pos] && target >= search_array[pos - 1]){
+        found = true;
+      } else {
+        pos = (target < search_array[pos] ? pos - 1: pos + 1);
+        if(pos == 255 || pos == 0){
+          return pos;
+        }
+      }
+    }
+    float diff_a;
+    float diff_b;
+    if(target >= search_array[pos] && target <= search_array[pos + 1]){
+      diff_a = target - search_array[pos];   
+      diff_b = search_array[pos + 1] - target;
+      pos = (diff_a < diff_b ? pos : pos + 1);
+    } else {
+      diff_b = target - search_array[pos - 1];   
+      diff_a = search_array[pos] - target;
+      pos = (diff_a < diff_b ? pos : pos - 1);
+    }
+    return pos;
+  }
+  
   
   
   public boolean grayscale_check() {
@@ -85,7 +148,7 @@ class converter{
       return img;
     }
     for(int i = 0; i < points.length - 1; i++){
-      float A = (points[i + 1] - points[i]) / (values[i + 1] - values[i]);
+      float A =  ((float)values[i + 1] - (float)values[i]) / (float)(points[i + 1] - (float)points[i]) ;
       float B = values[i] -  A * points[i];
       for(int j = points[i]; j < points[i + 1]; j++) {
         float Voutj = A*j + B;

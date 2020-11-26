@@ -9,6 +9,16 @@ import gab.opencv.*;
  */
 converter menu;
 void setup() {
+  GButton btn0 = new GButton(this, 10, 10, 100, 30, "First Button");
+  GButton btn1 = new GButton(this, 120, 10, 100, 30, "Second Button");
+  GButton btn2 = new GButton(this, 220, 10, 100, 30, "Second Button");
+  GButton btn3 = new GButton(this, 320, 10, 100, 30, "Second Button");
+  GButton btn4 = new GButton(this, 420, 10, 100, 30, "Second Button");
+  GButton btn5 = new GButton(this, 520, 10, 100, 30, "Second Button");
+  GButton btn6 = new GButton(this, 520, 10, 100, 30, "Second Button");
+  GButton btn7 = new GButton(this, 620, 10, 100, 30, "Second Button");
+  GButton btn8 = new GButton(this, 720, 10, 100, 30, "Second Button");
+  GButton btn9 = new GButton(this, 830, 10, 100, 30, "Second Button");
   int window_height = displayHeight - (int)(0.05 * displayWidth);
   int window_width = (int)displayWidth;
   surface.setSize(window_width, window_height);
@@ -23,9 +33,7 @@ void setup() {
   int[] b = {255, 100};
  
  
-  menu.brightness(2, a, b);
-  menu.difference(20);
- 
+  menu.equalize_hist();
 }
 
 int i = 0;
@@ -35,7 +43,5 @@ void draw() {
    menu.reload_histogram();
    menu.reload_acc_histogram();
    menu.drawImage();
-
-   menu.drawTwoImages();
    //menu.drawHistogram();
 }

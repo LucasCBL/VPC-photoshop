@@ -176,7 +176,6 @@ class converter {
       }
     }
     img = convert_to_table(Vout);
-    reload_histogram();
     return img;
   }
 
@@ -238,7 +237,7 @@ class converter {
   }
 
   public void draw_out_image(PApplet app) {
-    app.background(0);
+    app.background(200);
     app.image(output_img, 0, 0);
   }
 
@@ -247,85 +246,40 @@ class converter {
     image(histogram, 0, height / 4, width - histogram.width, height - histogram.height);
   }
 
-void reload_histogram() {
-    fill(200);
-    rect(5, (height * 0.05), histogram.width, histogram.height);
-    int[] values = new int[256];
+  void reload_histogram(PApplet app, PImage image, float x, float y, float width_h, float height_h) {
+    float[] values = new float[256];
     for (int i = 0; i < 256; i++) {
       values[i] = 0;
     }
-    for (int i = 0; i < img.pixels.length; i++) {
-      values[round(red(img.pixels[i]))]++;
+    for (int i = 0; i < image.pixels.length; i++) {
+      values[round(red(image.pixels[i]))]++;
     }
-
-    int min = 0;
-    while (values[min] == 0) {
-      min++;
-    }
-    min_val = min;
-
-    int max = 255;
-    while (values[max] == 0) {
-      max--;
-    }
-    max_val = max;
-
-    int hist_max = max(values);
-    stroke(0);
-
-    float space = histogram.width / 256.0;
-    strokeWeight(space / 2);
-    float unit_height = (histogram.height * 0.9) / hist_max;
-    for (int i = 0; i < 256; i++) {
-      line(space * i + 5, (height * 0.05 + histogram.height), space * i + 5, (height * 0.05 + histogram.height) - (values[i] * unit_height) - (histogram.height * 0.05));
-    }
-    delay(100);
-    histogram = get(0, height, histogram.width, histogram.height);
-
-    //print("Histrogram width " + histogram.width + " width " + (width * 0.3) + "\nSpace: " + space + "\n");
+    BarChart histograma = new BarChart(app);
+    histograma.setData(values);
+    histograma.setBarColour(0); 
+    histograma.showValueAxis(true);
+    histograma.draw(x, y, width_h, height_h);
   }
 
 
 
 
-  void reload_acc_histogram() {
-    fill(200);
-    rect(5, (height * 0.05 + histogram.height), histogram.width, histogram.height);
-    int[] values = new int[256];
+  void reload_acc_histogram(PApplet app, PImage image, float x, float y, float width_h, float height_h) {
+    float[] values = new float[256];
     for (int i = 0; i < 256; i++) {
       values[i] = 0;
     }
-    for (int i = 0; i < img.pixels.length; i++) {
-      values[round(red(img.pixels[i]))]++;
+    for (int i = 0; i < image.pixels.length; i++) {
+      values[round(red(image.pixels[i]))]++;
     }
-
-    int min = 0;
-    while (values[min] == 0) {
-      min++;
+    for (int i = 1; i < 256; i++) {
+      values[i] += values[i - 1];
     }
-    min_val = min;
-
-    int max = 255;
-    while (values[max] == 0) {
-      max--;
-    }
-    max_val = max;
-
-    int hist_max = img.pixels.length;
-    stroke(0);
-
-    float space = histogram.width / 256.0;
-    strokeWeight(space / 2);
-    float unit_height = (histogram.height * 0.9) / hist_max;
-    int total = 0;
-    for (int i = 0; i < 256; i++) {
-      total += values[i];
-      line(space * i + 5, (height * 0.05 + 2 * histogram.height), space * i + 5, (height * 0.05 + 2 * histogram.height) - (total * unit_height) - (histogram.height * 0.05));
-    }
-    delay(100);
-    acc_histogram = get(0, height, histogram.width, histogram.height);
-
-    //print("Histrogram width " + histogram.width + " width " + (width * 0.3) + "\nSpace: " + space + "\n");
+    BarChart histograma = new BarChart(app);
+    histograma.setData(values);
+    histograma.setBarColour(0); 
+    histograma.showValueAxis(true);
+    histograma.draw(x, y, width_h, height_h);
   }
 
 

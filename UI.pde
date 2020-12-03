@@ -23,9 +23,10 @@ class UI {
   public int[] points;
   public int[] values;
   public int inputs_left;
-  
+  private ImageTransformer canvas_;
   public UI(ImageTransformer canvas) {
     //setCloseAction(GWindow.CLOSE_WINDOW);
+    canvas_ = canvas;
     transform = new converter();
     
     float pos = width / 12;
@@ -65,8 +66,10 @@ class UI {
     if(transform.img != null) {
       background(200);
       update_image();
-      transform.reload_histogram();
-      transform.reload_acc_histogram();
+      text("Histograma", width * 0.05,  (float)height * 1.02 - menu.transform.drawable_y );
+      text("Histograma acumulativo", width * 0.05,  (float)height * 1.02 - menu.transform.drawable_y  + (float)height * 0.3);
+      transform.reload_histogram(canvas_, menu.transform.img, 0.0, (float)height - menu.transform.drawable_y, (float)width * 0.29, (float)height * 0.3);
+      transform.reload_acc_histogram(canvas_, menu.transform.img, 0.0, (float)height - menu.transform.drawable_y + (float)height * 0.31, (float)width * 0.29, (float)height * 0.3);
       transform.mousePositionInImage();
     }
   }
@@ -97,13 +100,16 @@ class UI {
 
   
   public void draw_output() {
-    GWindow output =  GWindow.getWindow(this, "output image", 0, 0, 100 + menu.transform.output_img.width , 100 + menu.transform.output_img.height, JAVA2D);
+    int w_height = menu.transform.output_img.height > 600 ? menu.transform.output_img.height : 600;
+    GWindow output =  GWindow.getWindow(this, "output image", 0, 0, 400 + menu.transform.output_img.width , w_height, JAVA2D);
     output.addDrawHandler(this, "draw_out_image");
-    
   }
+
   
-  public void draw_out_image(PApplet applet, GWinData windata)  {
-    menu.transform.draw_out_image(applet);
+  public void draw_out_image(PApplet app, GWinData windata)  {
+    menu.transform.draw_out_image(app);
+    menu.transform.reload_histogram(app, menu.transform.output_img, (float)menu.transform.output_img.width, 0.0, 400.0, 280.0);
+    menu.transform.reload_acc_histogram(app, menu.transform.output_img, (float)menu.transform.output_img.width, 300.0, 400.0, 280.0);
   }
   
   void input_gamma(PApplet app, GWinData windata) {

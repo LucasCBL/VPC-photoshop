@@ -22,7 +22,7 @@ void setup() {
 	 background(255);
 	// The image file must be in the data folder of the current sketch 
 	// to load successfully
-	menu = new UI(this);
+  menu = new UI(this);
   //print(this.getClass());
 	
   

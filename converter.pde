@@ -180,7 +180,74 @@ class converter {
     return img;
   }
 
-  void reload_histogram() {
+    public PImage highlight_difference(int umbral) {
+    if(img.pixels.length != second_img.pixels.length) {
+      return output_img;
+    }
+    for (int i = 0; i < second_img.pixels.length; i++) {
+      output_img.pixels[i] = abs(red(img.pixels[i]) - red(second_img.pixels[i])) > umbral ?  color(255, 0, 0) : img.pixels[i];
+    }
+
+    return output_img;
+  }
+
+
+
+  public PImage difference() {
+    if(img.pixels.length != second_img.pixels.length) {
+      return output_img;
+    }
+    
+    for (int i = 0; i < second_img.pixels.length; i++) {
+      output_img.pixels[i] = img.pixels[i] - second_img.pixels[i];
+    }
+
+    return  output_img;
+  }
+
+
+
+
+
+  private PImage convert_to_table(int[] Vout) {
+    PImage converted_img = img;
+    for (int i = 0; i < converted_img.pixels.length; i++) {
+      converted_img.pixels[i] = color((float)Vout[round(red(img.pixels[i]))]);
+    }
+    return converted_img;
+  }
+
+  public PImage gamma_transform(float gamma) {
+    int[] Vout = new int[256];
+    for (int i = 0; i < 256; i++) {
+      int val = round(pow((((float)i) / 255.0), gamma) * 255);
+      Vout[i] = (val > 255 ? 255 : val);
+    }
+    img = convert_to_table(Vout);
+    return img;
+  }
+
+  public void draw_image() {
+    float proportion = (float)img.height / img.width;
+    if(proportion <= (float)drawable_y / drawable_x){
+      image(img, width - drawable_x, height - drawable_y, drawable_x, drawable_x * proportion);
+    } else {
+      image(img, width - drawable_x, height - drawable_y, drawable_y / proportion, drawable_y);
+    }
+    
+  }
+
+  public void draw_out_image(PApplet app) {
+    app.background(0);
+    app.image(output_img, 0, 0);
+  }
+
+  public void draw_histogram() {
+    // a la izquierda hay que dibujar la información de la imagen
+    image(histogram, 0, height / 4, width - histogram.width, height - histogram.height);
+  }
+
+void reload_histogram() {
     fill(200);
     rect(5, (height * 0.05), histogram.width, histogram.height);
     int[] values = new int[256];
@@ -264,61 +331,6 @@ class converter {
 
 
 
-  private PImage convert_to_table(int[] Vout) {
-    PImage converted_img = img;
-    for (int i = 0; i < converted_img.pixels.length; i++) {
-      converted_img.pixels[i] = color((float)Vout[round(red(img.pixels[i]))]);
-    }
-    return converted_img;
-  }
-
-  public PImage gamma_transform(float gamma) {
-    int[] Vout = new int[256];
-    for (int i = 0; i < 256; i++) {
-      int val = round(pow((((float)i) / 255.0), gamma) * 255);
-      Vout[i] = (val > 255 ? 255 : val);
-    }
-    img = convert_to_table(Vout);
-    return img;
-  }
-
-  public void draw_image() {
-    image(img, width - drawable_x, height - drawable_y);
-  }
-
-  public void draw_out_image(PApplet app) {
-    app.background(0);
-    app.image(output_img, 0, 0);
-  }
-
-  public void draw_histogram() {
-    // a la izquierda hay que dibujar la información de la imagen
-    image(histogram, 0, height / 4, width - histogram.width, height - histogram.height);
-  }
-
-
-
-  public PImage highlight_difference(int umbral) {
-    
-    for (int i = 0; i < second_img.pixels.length; i++) {
-      output_img.pixels[i] = abs(red(img.pixels[i]) - red(second_img.pixels[i])) > umbral ?  color(255, 0, 0) : img.pixels[i];
-    }
-
-    return output_img;
-  }
-
-
-
-  public PImage difference() {
-    for (int i = 0; i < second_img.pixels.length; i++) {
-      output_img.pixels[i] = img.pixels[i] - second_img.pixels[i];
-    }
-
-    return  output_img;
-  }
-
-
-
   public float get_brightness() {
     float sum = 0;
     for (int i = 0; i < img.pixels.length; i++) {
@@ -350,8 +362,8 @@ class converter {
   }
 
 
-  public void drawTwoImages() {
+ /* public void drawTwoImages() {
     image(img, width - drawable_x, height - drawable_y + img.height);  
     image(second_img, width - drawable_x + img.width, height - drawable_y + img.height);
-  }
+  }*/
 }

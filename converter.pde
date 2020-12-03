@@ -370,6 +370,10 @@ void reload_histogram() {
     }
     
   }
+  
+  public void outputImage(String name){
+    img.save(name);
+  }
 
 
  /* public void drawTwoImages() {

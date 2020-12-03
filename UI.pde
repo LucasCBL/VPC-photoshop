@@ -17,6 +17,7 @@ class UI {
   public boolean highlight_input_flag;
   public boolean gamma_input_flag;
   public boolean brightness_input_flag;
+  public boolean save_image_flag;
   
   public int brightness_point;
   public int[] points;
@@ -57,6 +58,7 @@ class UI {
     highlight_input_flag = false;
     gamma_input_flag = false;
     brightness_input_flag = false;
+    save_image_flag = false;
   }
 
   public void draw_all() {
@@ -137,8 +139,28 @@ class UI {
     app.fill(0);
   }
   
+  void image_name(PApplet app, GWinData windata) {
+    app.background(200);
+    app.textSize(20);
+    app.text("Introduzca el nombre de la imagen: ", 10, 30); 
+    app.fill(0);
+  }
   
   
+  public void fileCreate(File created){
+    if (created == null) {
+      println("Window was closed or the user hit cancel.");
+    } else {
+      menu.transform.img.save(created.getAbsolutePath());
+    }
+  }
+  public void fileCreateOutput(File created){
+    if (created == null) {
+      println("Window was closed or the user hit cancel.");
+    } else {
+      menu.transform.output_img.save(created.getAbsolutePath());
+    }
+  }
   
   
   public void handleButtonEvents(GButton button, GEvent event) {
@@ -183,10 +205,10 @@ class UI {
         text_field.addDrawHandler(this, "input_gamma");
         
       } else if (button == menu.save_img_btn) {
-        selectInput("Select a file to process:", "fileSelected");
+          selectOutput("Eliga el nombre y formato de la imagen", "fileCreate");
      
       } else if (button == menu.save_output_btn) {
-        selectInput("Select a file to process:", "fileSelected");
+        selectOutput("Eliga el nombre y formato de la imagen", "fileCreateOutput");
      
       }
     
@@ -234,9 +256,7 @@ class UI {
           }
           
         }
-        
       }
-      
       
       textcontrol.setText("");
     }

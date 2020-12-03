@@ -36,6 +36,7 @@ void draw() {
 //	 menu.reload_histogram();
 //	 menu.reload_acc_histogram();
    	 menu.draw_all();
+     
 
 //Runtime.getRuntime().exec("explorer.exe /select, path");
 	 //menu.drawHistogram();

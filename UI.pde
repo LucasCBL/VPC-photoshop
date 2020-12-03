@@ -65,7 +65,7 @@ class UI {
       update_image();
       transform.reload_histogram();
       transform.reload_acc_histogram();
-      
+      transform.mousePositionInImage();
     }
   }
   
@@ -97,6 +97,7 @@ class UI {
   public void draw_output() {
     GWindow output =  GWindow.getWindow(this, "output image", 0, 0, 100 + menu.transform.output_img.width , 100 + menu.transform.output_img.height, JAVA2D);
     output.addDrawHandler(this, "draw_out_image");
+    
   }
   
   public void draw_out_image(PApplet applet, GWinData windata)  {

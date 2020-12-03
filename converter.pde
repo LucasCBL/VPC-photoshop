@@ -354,11 +354,21 @@ void reload_histogram() {
 
   public void mousePositionInImage() {
     int posX, posY;
-    if (((mouseX > (width - drawable_x)) && (mouseY > (height - drawable_y))) && ((mouseX < ((width - drawable_x) + img.width) && (mouseY < ((height - drawable_y) + img.height))))) {
-      posX = mouseX - (width - drawable_x);
-      posY = mouseY - (height - drawable_y);
-      print("Está en la imagen x : " + posX + " y : " + posY + "\n");
+    float proportion = (float)img.height / img.width;
+    if(proportion <= (float)drawable_y / drawable_x){    
+      if (((mouseX > (width - drawable_x)) && (mouseY > (height - drawable_y))) && ((mouseX < ((width - (drawable_x * proportion)) + img.width) && (mouseY < ((height - (drawable_y * proportion) ) + img.height))))) {
+        posX = mouseX - (int)(width - (drawable_x));
+        posY = mouseY - (int)(height - (drawable_y));
+        print("Está en la imagen x : " + posX + " y : " + posY + "\n");
+      }
+    } else {
+      if (((mouseX > (width - drawable_x)) && (mouseY > (height - drawable_y))) && ((mouseX < ((width - drawable_x) + img.width) && (mouseY < ((height - drawable_y) + img.height))))) {
+        posX = mouseX - (width - drawable_x);
+        posY = mouseY - (height - drawable_y);
+        print("Está en la imagen x : " + posX + " y : " + posY + "\n");
+      }
     }
+    
   }
 
 

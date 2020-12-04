@@ -35,6 +35,19 @@
     menu.transform.reload_acc_histogram(app, menu.transform.second_img, (float)menu.transform.second_img.width, 300.0, 400.0, 280.0);
   }
   
+  void brightness_prompt(PApplet app, GWinData windata) {
+    app.textSize(25);
+    app.text("Introduzca brillo: ", 10, 30); 
+    app.fill(0);
+  }
+  
+  void contrast_prompt(PApplet app, GWinData windata) {
+    app.textSize(25);
+    app.text("Introduzca contraste: ", 10, 30); 
+    app.fill(0);
+  }
+  
+  
   void input_gamma(PApplet app, GWinData windata) {
     app.textSize(25);
     app.text("Introduzca Valor gamma: ", 10, 30); 
@@ -99,10 +112,18 @@
       } else if (button == menu.open_second_img_btn) {
         selectInput("Select a file to process:", "call_load_second_img");
      
-      } else if (button == menu.change_brightness_btn) {
+      } else if(button == menu.bc_specify_btn){
         menu.deactivate_all_flags();
         
-        menu.brightness_input_flag = true;
+        menu.bc_image_flag = true;
+        text_field =  GWindow.getWindow(this, "Input window", 100, 50, 500, 100, JAVA2D);
+        GTextField x = new GTextField(text_field, 0, 50, 500, 50);
+        text_field.addDrawHandler(this, "brightness_prompt");
+        
+      } else if (button == menu.lineal_tf_btn) {
+        menu.deactivate_all_flags();
+        
+        menu.lt_input_flag = true;
         
         text_field =  GWindow.getWindow(this, "Input window", 100, 50, 500, 100, JAVA2D);
         GTextField x = new GTextField(text_field, 0, 50, 500, 50);
@@ -156,35 +177,49 @@
         menu.transform.gamma_transform(Float.parseFloat(textcontrol.getText()));
         menu.gamma_input_flag = false;
         text_field.forceClose();
-      } else if(menu.brightness_input_flag){
-        if(menu.brightness_point >= 2) {
+      } else if(menu.lt_input_flag){
+        if(menu.lineal_tf_point >= 2) {
           if(menu.inputs_left > 0){
             if(menu.inputs_left % 2 == 0) {
-              menu.points[menu.brightness_point - ((menu.inputs_left + 1) / 2)] = Integer.parseInt(textcontrol.getText());
+              menu.points[menu.lineal_tf_point - ((menu.inputs_left + 1) / 2)] = Integer.parseInt(textcontrol.getText());
               text_field.addDrawHandler(this, "value_input");
               
             } else {
-              menu.values[menu.brightness_point - ((menu.inputs_left + 1) / 2)] = Integer.parseInt(textcontrol.getText());
+              menu.values[menu.lineal_tf_point - ((menu.inputs_left + 1) / 2)] = Integer.parseInt(textcontrol.getText());
               text_field.addDrawHandler(this, "hist_point_input");
             }
             menu.inputs_left--;
             if(menu.inputs_left == 0) {
-              menu.transform.brightness(menu.brightness_point, menu.points, menu.values);
-              menu.brightness_input_flag = false;
+              menu.transform.lineal_transformation(menu.lineal_tf_point, menu.points, menu.values);
+              menu.lt_input_flag = false;
+              menu.lineal_tf_point = 0;
               text_field.forceClose();
             }
           }
         } else {
-          menu.brightness_point = Integer.parseInt(textcontrol.getText());
+          menu.lineal_tf_point = Integer.parseInt(textcontrol.getText());
          
-          if(menu.brightness_point >= 2) {
-            menu.inputs_left = menu.brightness_point * 2;
-            menu.points = new int[menu.brightness_point];
-            menu.values = new int[menu.brightness_point];
+          if(menu.lineal_tf_point >= 2) {
+            menu.inputs_left = menu.lineal_tf_point * 2;
+            menu.points = new int[menu.lineal_tf_point];
+            menu.values = new int[menu.lineal_tf_point];
             text_field.addDrawHandler(this, "hist_point_input");
           }
           
         }
+      } else if (menu.bc_image_flag) {
+        if(!menu.brightness_input_done) {
+          menu.brightness = Float.parseFloat(textcontrol.getText());
+          menu.brightness_input_done = true;
+          
+          text_field.addDrawHandler(this, "contrast_prompt");
+        } else {
+          menu.brightness_input_done = false;
+          menu.transform.brightness(menu.brightness, Float.parseFloat(textcontrol.getText()));
+          menu.brightness = 0;
+          text_field.forceClose();
+        }
+      
       }
       
       textcontrol.setText("");

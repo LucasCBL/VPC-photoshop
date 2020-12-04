@@ -3,7 +3,8 @@ import g4p_controls.*;
 class UI {
   public GButton open_img_btn;
   public GButton open_second_img_btn;
-  public GButton change_brightness_btn;
+  public GButton lineal_tf_btn;
+  public GButton bc_specify_btn;
   public GButton change_gamma_btn;
   public GButton get_diff_btn;
   public GButton show_diff_btn;
@@ -16,14 +17,20 @@ class UI {
   
   public boolean highlight_input_flag;
   public boolean gamma_input_flag;
-  public boolean brightness_input_flag;
+  public boolean lt_input_flag;
   public boolean save_image_flag;
+  public boolean bc_image_flag;
   
-  public int brightness_point;
+  public int lineal_tf_point;
   public int[] points;
   public int[] values;
   public int inputs_left;
+  
+  public float brightness;
+  public boolean brightness_input_done;
+  
   private ImageTransformer canvas_;
+  
   public UI(ImageTransformer canvas) {
     //setCloseAction(GWindow.CLOSE_WINDOW);
     canvas_ = canvas;
@@ -35,18 +42,20 @@ class UI {
     G4P.setGlobalColorScheme(5);
     open_img_btn = new GButton(canvas, pos/ 2, 10, size, 30, "Abrir imagen");
     open_second_img_btn = new GButton(canvas, pos / 2 + pos, 10, size, 30, "Abrir imagen secudnaria");
-    change_brightness_btn = new GButton(canvas, pos / 2 + pos * 2, 10, size, 30, "cambiar b&c");
-    equalize_hist_btn = new GButton(canvas, pos / 2 + pos * 3, 10, size, 30, "ecualizar hist");
-    specify_hist_btn = new GButton(canvas, pos / 2 + pos * 4, 10, size, 30, "especificar hist a img 2");
-    get_diff_btn = new GButton(canvas, pos / 2 + pos * 5, 10, size, 30, "Ver diferencia");
-    show_diff_btn = new GButton(canvas, pos / 2 + pos * 6, 10, size, 30, "Mostrar diff umbral");
-    change_gamma_btn = new GButton(canvas, pos / 2 + pos * 7, 10, size, 30, "cambiar gamma");
-    save_img_btn = new GButton(canvas, pos / 2 + pos * 8, 10, size, 30, "guardar imagen");
-    save_output_btn = new GButton(canvas, pos / 2 + pos * 9, 10, size, 30, "guardar output");
+    bc_specify_btn = new GButton(canvas, pos / 2 + pos * 2, 10, size, 30, "Brillo y contraste");
+    lineal_tf_btn = new GButton(canvas, pos / 2 + pos * 3, 10, size, 30, "Transformacion Lineal");
+    equalize_hist_btn = new GButton(canvas, pos / 2 + pos * 4, 10, size, 30, "ecualizar hist");
+    specify_hist_btn = new GButton(canvas, pos / 2 + pos * 5, 10, size, 30, "especificar hist a img 2");
+    get_diff_btn = new GButton(canvas, pos / 2 + pos * 6, 10, size, 30, "Ver diferencia");
+    show_diff_btn = new GButton(canvas, pos / 2 + pos * 7, 10, size, 30, "Mostrar diff umbral");
+    change_gamma_btn = new GButton(canvas, pos / 2 + pos * 8, 10, size, 30, "cambiar gamma");
+    save_img_btn = new GButton(canvas, pos / 2 + pos * 9, 10, size, 30, "guardar imagen");
+    save_output_btn = new GButton(canvas, pos / 2 + pos * 10, 10, size, 30, "guardar output");
     
     open_img_btn.fireAllEvents(true);
     open_second_img_btn.fireAllEvents(true);
-    change_brightness_btn.fireAllEvents(true);
+    bc_specify_btn.fireAllEvents(true);
+    lineal_tf_btn.fireAllEvents(true);
     equalize_hist_btn.fireAllEvents(true);
     specify_hist_btn.fireAllEvents(true);
     //get_diff_btn.fireAllEvents(true);
@@ -58,8 +67,10 @@ class UI {
     
     highlight_input_flag = false;
     gamma_input_flag = false;
-    brightness_input_flag = false;
+    lt_input_flag = false;
     save_image_flag = false;
+    bc_image_flag = false;
+    brightness_input_done = false;
   }
 
   public void draw_all() {
@@ -84,7 +95,9 @@ class UI {
   public void deactivate_all_flags(){
     highlight_input_flag = false;
     gamma_input_flag = false;
-    brightness_input_flag = false;
+    lt_input_flag = false;
+    bc_image_flag = false;
+    brightness_input_done = false;
   }
 
   public void update_image(){

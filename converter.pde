@@ -156,7 +156,7 @@ class converter {
 
 
 
-  public PImage brightness(int line_number, int[] points, int[] values) {
+  public PImage lineal_transformation(int line_number, int[] points, int[] values) {
     int[] Vout = new int[256];
 
     if (line_number < 2 || points.length != values.length) {
@@ -177,7 +177,21 @@ class converter {
     return img;
   }
 
-    public PImage highlight_difference(int umbral) {
+  public PImage brightness(float brightness, float contrast) {
+    int[] Vout = new int[256];
+
+    float A = contrast / get_contrast();
+    float B =  brightness -  (A * get_brightness());
+    for (int i = 0; i < 256; i++) {
+      Vout[i] = round((A * (float)i) + B);
+      Vout[i] = Vout[i] < 0 ? 0 : Vout[i];
+      Vout[i] = Vout[i] > 255 ? 255 : Vout[i];
+    }
+    img = convert_to_table(Vout);
+    return img;
+  }
+
+  public PImage highlight_difference(int umbral) {
     if(img.pixels.length != second_img.pixels.length) {
       return output_img;
     }

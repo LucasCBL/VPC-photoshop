@@ -527,8 +527,8 @@ class converter {
     // Axis formatting and labels.
     line_diff_graph2.showXAxis(true); 
     line_diff_graph2.showYAxis(true); 
-    line_diff_graph2.setMinY(min(round_diff_graph));
-     
+    line_diff_graph2.setMinY(min(diff_graph));
+    line_diff_graph2.setMaxY(max(diff_graph) + 50);
     // Symbol colours
     line_diff_graph2.setPointColour(color(255,0,0));
     line_diff_graph2.setPointSize(5);

@@ -81,15 +81,17 @@ void point_num_input(PApplet app, GWinData windata) {
   app.fill(0);
 }
 
-void image_name(PApplet app, GWinData windata) {
+
+
+void cross_neighbours(PApplet app, GWinData windata) {
   app.background(200);
   app.textSize(20);
-  app.text("Introduzca el nombre de la imagen: ", 10, 30); 
+  app.text("Introduzca el radio de vecinos de redondeo: ", 10, 30); 
   app.fill(0);
 }
 
 void graphs(PApplet app, GWinData windata) {
-  menu.transform.cross_section(app, new PVector(0,0), new PVector(menu.transform.img.width, menu.transform.img.height), 30);
+  menu.transform.cross_section(app, menu.initial_cross_p, menu.final_cross_p, menu.neighbours);
 }
 
 
@@ -162,8 +164,8 @@ public void handleButtonEvents(GButton button, GEvent event) {
     } else if (button == menu.save_output_btn) {
       selectOutput("Eliga el nombre y formato de la imagen", "fileCreateOutput");
     } else if (button == menu.cross_sect_btn) {
-      GWindow c = GWindow.getWindow(this, "graphs",100,100,800,800, JAVA2D);
-      c.addDrawHandler(this, "graphs");
+      menu.deactivate_all_flags();
+      menu.cross_flag = true;
     }
   }
 }
@@ -205,6 +207,7 @@ public void handleTextEvents(GEditableTextControl textcontrol, GEvent event) {
           menu.points = new int[menu.lineal_tf_point];
           menu.values = new int[menu.lineal_tf_point];
           text_field.addDrawHandler(this, "hist_point_input");
+          
         }
       }
     } else if (menu.bc_image_flag) {
@@ -219,6 +222,11 @@ public void handleTextEvents(GEditableTextControl textcontrol, GEvent event) {
         menu.brightness = 0;
         text_field.forceClose();
       }
+    } else if(menu.cross_flag && menu.cross_click_2) {
+      menu.neighbours =  Integer.parseInt(textcontrol.getText());
+      GWindow graphs = GWindow.getWindow(this, "graphs",100,100,800,800, JAVA2D);
+      graphs.addDrawHandler(this, "graphs");
+      text_field.forceClose();
     }
 
     textcontrol.setText("");
@@ -245,5 +253,21 @@ void mousePressed() {
       menu.roi_flag = false;
     }
   
+  } else if(menu.cross_flag) {
+    if(!menu.cross_click_1) {
+      float x = (float)menu.transform.mouse_x_in_image();
+      float y = (float)menu.transform.mouse_y_in_image();
+      menu.initial_cross_p = new PVector(x,y);
+      menu.cross_click_1 = true;
+    } else if(!menu.cross_click_2) {
+      float x = (float)menu.transform.mouse_x_in_image();
+      float y = (float)menu.transform.mouse_y_in_image();
+      menu.final_cross_p = new PVector(x,y);
+      menu.cross_click_2 = true;
+      text_field =  GWindow.getWindow(this, "Input window", 100, 50, 500, 100, JAVA2D);
+      GTextField text = new GTextField(text_field, 0, 50, 500, 50);
+      text_field.addDrawHandler(this, "graph_neighbours");
+    }
+   
   }
 }

@@ -50,6 +50,7 @@ class UI {
   public boolean cross_click_2;
   public PVector initial_cross_p;
   public PVector final_cross_p;
+  public int neighbours;
   
   private ImageTransformer canvas_;
   
@@ -119,13 +120,12 @@ class UI {
         noFill();
         rect(screen_x, screen_y, mouseX - screen_x, mouseY - screen_y);
       }
-      menu.transform.draw_line(new PVector(0,0), new PVector(menu.transform.img.width, menu.transform.img.height));
-      if(cross_click_1) {
+      if(cross_click_1 && !cross_click_2) {
         PVector current_point = new PVector(menu.transform.mouse_x_in_image(), menu.transform.mouse_y_in_image());
-        menu.transform.draw_line(initial_cross_p, current_point);
-      }
-      
-      if(cross_click_2) {
+        if(current_point.x != -1 && current_point.y != -1) {
+          menu.transform.draw_line(initial_cross_p, current_point);
+        }
+      }else if(cross_click_2) {
         menu.transform.draw_line(initial_cross_p, final_cross_p);
       }
     }

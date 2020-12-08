@@ -10,8 +10,10 @@ class converter {
   private int max_val;
   private int drawable_x;
   private int drawable_y;
+  private PApplet canvas_;
 
-  public converter() {
+  public converter(PApplet canvas) {
+    canvas_ = canvas;
     drawable_x = round(width * 0.7);
     drawable_y = round(height * 0.95);
   }
@@ -20,13 +22,15 @@ class converter {
     if (selected == null) {
       println("Window was closed or the user hit cancel.");
     } else {
-      img = loadImage(selected.getAbsolutePath());
+      img = loadImageIO(selected.getAbsolutePath());
       img = to_grayscale(img);
       String[] x = split(selected.getAbsolutePath(), ".");
       format = x[x.length - 1];
     }
     output_img = createImage(img.width, img.height, RGB);
     draw_image();
+    
+    
   }
 
 
@@ -34,7 +38,7 @@ class converter {
     if (selected == null) {
       println("Window was closed or the user hit cancel.");
     } else {
-      second_img = loadImage(selected.getAbsolutePath());
+      second_img = loadImageIO(selected.getAbsolutePath());
       second_img = to_grayscale(second_img);
       draw_second();
     }
@@ -195,6 +199,7 @@ class converter {
     if(img.pixels.length != second_img.pixels.length) {
       return output_img;
     }
+    output_img = createImage(img.width, img.height, RGB);
     for (int i = 0; i < second_img.pixels.length; i++) {
       output_img.pixels[i] = abs(red(img.pixels[i]) - red(second_img.pixels[i])) > umbral ?  color(255, 0, 0) : img.pixels[i];
     }
@@ -208,7 +213,7 @@ class converter {
     if(img.pixels.length != second_img.pixels.length) {
       return output_img;
     }
-    
+    output_img = createImage(img.width, img.height, RGB);
     for (int i = 0; i < second_img.pixels.length; i++) {
       output_img.pixels[i] = img.pixels[i] - second_img.pixels[i];
     }
@@ -360,6 +365,180 @@ class converter {
       }
     }
     return "";
+  }
+  
+   public int mouse_x_in_image() {
+    int posX;
+    float proportion = (float)img.height / img.width;
+    if(proportion <= (float)drawable_y / drawable_x){    
+      if (((mouseX >= (width - drawable_x)) && (mouseY >= (height - drawable_y))) && ((mouseX < (width) && (mouseY < ((height - drawable_y + drawable_x * proportion) ))))) {
+        return round((float)(mouseX - (int)(width - (drawable_x))) / ((float)drawable_x / (float)img.width));
+      }
+    } else {
+      if (((mouseX >= (width - drawable_x)) && (mouseY >= (height - drawable_y))) && ((mouseX < (width - drawable_x +  drawable_y / proportion) && (mouseY < height)))) {
+        return round((float)(mouseX - (width - drawable_x) )/ (((float)drawable_y / proportion) / (float)img.width));
+      }
+    }
+    return 0;
+  }
+  
+   public int mouse_y_in_image() {
+    int posX, posY;
+    float proportion = (float)img.height / img.width;
+    if(proportion <= (float)drawable_y / drawable_x){    
+      if (((mouseX >= (width - drawable_x)) && (mouseY >= (height - drawable_y))) && ((mouseX < (width) && (mouseY < ((height - drawable_y + drawable_x * proportion) ))))) {
+        return round((float)(mouseY - (int)(height - (drawable_y))) / ((float)drawable_x * proportion / (float)img.height));
+
+      }
+    } else {
+      if (((mouseX >= (width - drawable_x)) && (mouseY >= (height - drawable_y))) && ((mouseX < (width - drawable_x +  drawable_y / proportion) && (mouseY < height)))) {
+        return round((float)(mouseY - (height - drawable_y) )/ ((float)drawable_y / (float)img.height));
+       
+      }
+    }
+    return 0;
+  }
+  
+  public PVector[] get_line(PVector p1, PVector p2) {
+    float A = ((p1.y - p2.y) / (p1.x - p2.x));
+    float B = p1.y - A * p1.x;
+    PVector[] line;
+    if(Math.abs(p1.x - p2.x) < Math.abs(p1.y - p2.y)) {
+      line = new PVector[round(Math.abs(p1.y - p2.y))]; 
+      boolean up = p1.y < p2.y;
+      for(int i = 0; i < line.length; i++) {
+        int y = up ? round(p1.y + i) : round(p1.y - i);
+        int x = round((y - B) / A);
+        line[i] = new PVector(x, y);
+        //print("y -> x " + y + " -> " + x + "\n");
+      }
+    } else {
+      line = new PVector[round(Math.abs(p1.x - p2.x))]; 
+      boolean up = p1.x < p2.x;
+      for(int i = 0; i < line.length; i++) {
+        int x = up ? round(p1.x + i) : round(p1.x - i);
+        int y = round(A*x + B);
+        line[i] = new PVector(x, y);
+        //print("x -> y " + x + " -> " + y + "\n");
+      }
+    }
+    return line;
+  }
+  
+  public void draw_line(PVector p1, PVector p2) {
+    PVector[] line = get_line(p1, p2);
+    float proportion = (float)img.height / img.width;
+    float upscale = (proportion <= (float)drawable_y / drawable_x) ? (float)drawable_x / (float)img.width : (float)drawable_y / (float)img.height;
+    float begin_x = width - drawable_x;
+    float begin_y = height - drawable_y;
+    //print("UP = " + upscale + "\n");
+    //print("prop = " + proportion + "\n");
+    for(int i = 0; i < line.length; i++) {
+      stroke(255,0,0);
+      strokeWeight(1);
+      fill(255,0,0);
+      rect(begin_x + (line[i].x * upscale), begin_y + (line[i].y * upscale), upscale, upscale);
+    }
+  
+  }
+  
+  public void cross_section(PApplet chart_window, PVector p1, PVector p2, int neighbours) { //<>//
+    PVector[] line = get_line(p1, p2); //<>//
+    float[] x_axis = new float[line.length];
+    float[] graph = new float[line.length];
+    float[] diff_graph = new float[line.length];
+    
+    for(int i = 0; i < line.length; i++) {
+      x_axis[i] = i;
+    }
+    
+    for(int i = 0; i < graph.length; i++) { //<>//
+      graph[i] = round(red(img.get(round(line[i].x), round(line[i].y))));
+    }
+    
+    for(int i = 0; i < diff_graph.length - 1; i++) { //<>//
+      diff_graph[i] = graph[i] - graph[i + 1];
+    }
+    diff_graph[diff_graph.length - 1] = 0; //<>//
+    
+    float[] round_graph = new float[line.length];
+    float[] round_diff_graph = new float[line.length];
+    for(int i = 0; i < round_graph.length; i++) { //<>//
+      int count = 0;
+      int sum = 0;
+      for(int j = -neighbours; j <= neighbours; j++){
+        if(i + j >= 0 && i + j < graph.length) {
+          count++;
+          sum += graph[i + j];
+        }
+      }
+      round_graph[i] = sum / count;
+    }
+    
+    for(int i = 0; i < round_diff_graph.length - 1; i++) { //<>//
+      round_diff_graph[i] = round_graph[i] - round_graph[i + 1];
+    }
+    round_diff_graph[round_diff_graph.length - 1] = 0; //<>//
+    
+    // Both x and y data set here.  
+    XYChart line_graph1 = new XYChart(chart_window);
+    line_graph1.setData(x_axis, graph);
+     
+    // Axis formatting and labels.
+    line_graph1.showXAxis(true); 
+    line_graph1.showYAxis(true); 
+    line_graph1.setMinY(0);
+     
+    // Symbol colours
+    line_graph1.setPointColour(color(255,0,0));
+    line_graph1.setPointSize(5);
+    line_graph1.setLineWidth(2);
+    
+    XYChart line_graph2 = new XYChart(chart_window);
+    line_graph2.setData(x_axis, round_graph);
+     
+    // Axis formatting and labels.
+    line_graph2.showXAxis(true); 
+    line_graph2.showYAxis(true); 
+    line_graph2.setMinY(0);
+     
+    // Symbol colours
+    line_graph2.setPointColour(color(255,0,0));
+    line_graph2.setPointSize(5);
+    line_graph2.setLineWidth(2);
+    
+    // Both x and y data set here.  
+    XYChart line_diff_graph1 = new XYChart(chart_window);
+    line_diff_graph1.setData(x_axis, diff_graph);
+     
+    // Axis formatting and labels.
+    line_diff_graph1.showXAxis(true); 
+    line_diff_graph1.showYAxis(true); 
+    line_diff_graph1.setMinY(min(diff_graph));
+     
+    // Symbol colours
+    line_diff_graph1.setPointColour(color(255,0,0));
+    line_diff_graph1.setPointSize(5);
+    line_diff_graph1.setLineWidth(2);
+    
+    XYChart line_diff_graph2 = new XYChart(chart_window);
+    line_diff_graph2.setData(x_axis, round_diff_graph);
+     
+    // Axis formatting and labels.
+    line_diff_graph2.showXAxis(true); 
+    line_diff_graph2.showYAxis(true); 
+    line_diff_graph2.setMinY(min(round_diff_graph));
+     
+    // Symbol colours
+    line_diff_graph2.setPointColour(color(255,0,0));
+    line_diff_graph2.setPointSize(5);
+    line_diff_graph2.setLineWidth(2);
+    
+    
+    line_graph1.draw(0, 0, 400, 400);
+    line_graph2.draw(0, 400, 400, 400);
+    line_diff_graph1.draw(400, 0, 400, 400);
+    line_diff_graph2.draw(400, 400, 400, 400);
   }
 
 }

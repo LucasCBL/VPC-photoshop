@@ -194,6 +194,18 @@ public void handleButtonEvents(GButton button, GEvent event) {
       text_field =  GWindow.getWindow(this, "Input window", 100, 50, 500, 100, JAVA2D);
       GTextField x = new GTextField(text_field, 0, 50, 500, 50);
       text_field.addDrawHandler(this, "sample_input");
+    } else if (button == menu.vert_mirror_btn) {
+      menu.deactivate_all_flags();
+      menu.transform.mirror(true);
+    } else if (button == menu.hor_mirror_btn) {
+      menu.deactivate_all_flags();
+      menu.transform.mirror(false);
+    } else if (button == menu.transpose_btn) {
+      menu.deactivate_all_flags();
+      menu.transform.transpose();
+    } else if (button == menu.cross_sect_btn) {
+      menu.deactivate_all_flags();
+      menu.cross_flag = true;
     }
   }
 }

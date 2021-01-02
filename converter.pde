@@ -342,6 +342,41 @@ class converter {
     line_diff_graph2.draw(400, 400, 400, 400);
   }
   
+  public void mirror(boolean vertical) {
+    PImage new_img = createImage(img.width, img.height, RGB);
+    if(vertical) {
+      for(int i = 0; i < img.height; i++) {
+        for(int j = 0; j < img.width; j++) {
+          int col = round(img.get(j, i));
+          new_img.set(j, img.height - 1 - i, col);
+        }
+      }
+    } else {
+      for(int i = 0; i < img.width; i++) {
+        for(int j = 0; j < img.height; j++) {
+          int col = round(img.get(i, j));
+          new_img.set(img.width - 1 - i, j, col);
+        }
+      }
+    }
+    img = new_img;
+  }
+  
+  public void transpose() {
+    PImage new_img = createImage(img.height, img.width, RGB);
+    
+    for(int i = 0; i < img.width; i++) {
+      for(int j = 0; j < img.height; j++) {
+        int col = round(img.get(i, j));
+        new_img.set(j, i, col);
+      }
+    }
+   
+    img = new_img;
+  }
+  
+  
+  
   public void digitalize(int sample_size, int color_bit_size) {
     PImage new_img = createImage(ceil((float)img.width / (float)sample_size), ceil((float)img.height / (float)sample_size), RGB);
     
@@ -379,13 +414,7 @@ class converter {
   }
 
   public void draw_image() {
-    float proportion = (float)img.height / img.width;
-    if(proportion <= (float)drawable_y / drawable_x){
-      image(img, width - drawable_x, height - drawable_y, drawable_x, drawable_x * proportion);
-    } else {
-      image(img, width - drawable_x, height - drawable_y, drawable_y / proportion, drawable_y);
-    }
-    
+    image(img, width - drawable_x, height - drawable_y);
   }
 
   public void draw_out_image(PApplet app) {
@@ -559,7 +588,21 @@ class converter {
     }
     return line;
   }
+  public int return_min() {
+    int[] arr = new int[img.pixels.length];
+    for(int i = 0; i < arr.length; i++) {
+      arr[i] = round(red(img.pixels[i]));
+    }
+    return min(arr);
+  }
   
+  public int return_max() {
+    int[] arr = new int[img.pixels.length];
+    for(int i = 0; i < arr.length; i++) {
+      arr[i] = round(red(img.pixels[i]));
+    }
+    return max(arr);
+  }
   public void draw_line(PVector p1, PVector p2) {
     PVector[] line = get_line(p1, p2);
     float proportion = (float)img.height / img.width;

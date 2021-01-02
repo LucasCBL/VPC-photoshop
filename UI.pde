@@ -16,6 +16,12 @@ class UI {
   public GButton save_img_btn;
   public GButton save_output_btn;
   
+  //P2
+  
+  public GButton vert_mirror_btn;
+  public GButton hor_mirror_btn;
+  public GButton transpose_btn;
+  public GButton rotate_90_btn;
   
   
   public converter transform;
@@ -63,7 +69,7 @@ class UI {
     canvas_ = canvas;
     transform = new converter(canvas);
     
-    float pos = width / 15;
+    float pos = width / 19;
     float size = pos * 0.9;
     
     G4P.setGlobalColorScheme(5);
@@ -82,6 +88,15 @@ class UI {
     save_img_btn = new GButton(canvas, pos / 2 + pos * 12, 10, size, 30, "guardar imagen");
     save_output_btn = new GButton(canvas, pos / 2 + pos * 13, 10, size, 30, "guardar output");
     
+    
+    vert_mirror_btn = new GButton(canvas, pos / 2 + pos * 14, 10, size, 30, "V mirror");
+    hor_mirror_btn = new GButton(canvas, pos / 2 + pos * 15, 10, size, 30, "H Mirror");
+    transpose_btn = new GButton(canvas, pos / 2 + pos * 16, 10, size, 30, "Transpose");
+    rotate_90_btn = new GButton(canvas, pos / 2 + pos * 17, 10, size, 30, "guardar output");
+    
+    
+    
+    
     open_img_btn.fireAllEvents(true);
     open_second_img_btn.fireAllEvents(true);
     roi_btn.fireAllEvents(true);
@@ -96,6 +111,10 @@ class UI {
     digital_sim_btn.fireAllEvents(true);
     save_img_btn.fireAllEvents(true);
     save_output_btn.fireAllEvents(true);
+    vert_mirror_btn.fireAllEvents(true);
+    hor_mirror_btn.fireAllEvents(true);
+    transpose_btn.fireAllEvents(true);
+    rotate_90_btn.fireAllEvents(true);
     
     
     deactivate_all_flags();
@@ -118,7 +137,7 @@ class UI {
       text("Formato de imagen: " + menu.transform.format, 15.0, (float)height - 200);
       text("Tamaño de imagen: " + menu.transform.img.width + " x " + menu.transform.img.height, 15.0, (float)height - 240);
       text("Entropía: " + menu.transform.get_entropy(), 15.0, (float)height - 280);  
-      
+      text("min - max: " + menu.transform.return_min() + " - " + menu.transform.return_max(), 15.0, (float)height - 300);  
       if(roi_first_click) {
         stroke(100,0,0);
         noFill();

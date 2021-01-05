@@ -26,6 +26,7 @@ class converter {
       img = to_grayscale(img);
       String[] x = split(selected.getAbsolutePath(), ".");
       format = x[x.length - 1];
+      resize(20,20,true);
     }
     output_img = createImage(img.width, img.height, RGB);
     draw_image();
@@ -411,6 +412,57 @@ class converter {
     
     img = new_img;
     
+  }
+  
+  public void resize(int new_width, int new_height, boolean binomial) {
+    PImage new_img = createImage(round((float)img.width * (new_width / 100.0f)), round((float)img.height * (new_height / 100.0f)), RGB);
+    float width_proportion =  (new_width / 100f);
+    float height_proportion =  (new_height / 100f);
+    if(!binomial) {
+      print("\n neighbours");
+      int width_neighbours = round(new_width / 100);
+      int height_neighbours = round(new_height / 100);
+      print("\n widht" + width_neighbours + "\n height: " + height_neighbours + "\n");
+      for(int i = 0; i < new_img.width ; i++) {
+        for(int j = 0; j < new_img.height; j++) {
+          float neighbours_sum = 0;
+          int neighbours_count = 0;
+          for (int r = -width_neighbours; r <= width_neighbours; r++){
+            int row = round((float)i / (new_width / 100f)) - r;
+            if(row >= 0 && row < img.width) {
+              for (int c = -height_neighbours; c <= height_neighbours; c++){
+                int col = round((float)j / (new_height / 100f)) - c;
+                if(col >= 0 && col < img.height) {
+                  neighbours_count++;
+                  neighbours_sum += red(img.get(row,col));
+                  //print("\n row: " + row + " col: " + col + "\n");
+                  //print(1);
+                }
+              }
+            }
+          }
+          //print(neighbours_count + "\n");
+          //print(round(neighbours_sum / neighbours_count) + "\n");
+          new_img.set(i, j, color(round(neighbours_sum / (float)neighbours_count)));
+        }
+      }
+    } else {
+       for(int i = 0; i < new_img.width ; i++) {
+          for(int j = 0; j < new_img.height; j++) { 
+            float center_x = i / width_proportion;
+            float center_y = j / height_proportion;
+            int x1 = round(center_x) > center_x ?  round(center_x) - 1: round(center_x) ;
+            int y1 = round(center_y) > center_y ?  round(center_y) - 1: round(center_y) ;
+            int x2 = round(center_x) > center_x ?  round(center_x) : round(center_x) + 1;
+            int y2 = round(center_y) > center_y ?  round(center_y) : round(center_y) + 1;
+            float r_y1 = (((float)x2 - center_x) / (float)(x2 - x1)) * red(img.get(x1,y1)) + ((center_x - (float)x1) / (float)(x2 - x1)) * red(img.get(x2,y1));
+            float r_y2 = (((float)x2 - center_x) / (float)(x2 - x1)) * red(img.get(x1,y2)) + ((center_x - (float)x1) / (float)(x2 - x1)) * red(img.get(x2,y2));
+            float value = (((float)y2 - center_y) / (float)(y2 - y1)) * r_y1 + ((center_y - (float)y1) / (float)(y2 - y1)) * r_y2;
+            new_img.set(i,j,color(value));
+        }
+      }
+    }
+    img = new_img;
   }
 
   public void draw_image() {

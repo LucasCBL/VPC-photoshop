@@ -26,7 +26,7 @@ class converter {
       img = to_grayscale(img);
       String[] x = split(selected.getAbsolutePath(), ".");
       format = x[x.length - 1];
-      resize(20,20,true);
+
     }
     output_img = createImage(img.width, img.height, RGB);
     draw_image();
@@ -414,7 +414,19 @@ class converter {
     
   }
   
-  public void resize(int new_width, int new_height, boolean binomial) {
+  public void rotate_90(int rotations) {
+    for(int i = 0; i < rotations; i++) {
+      PImage new_img =  createImage(img.height, img.width, RGB);
+      for(int j = 0; j < img.height; j++) {
+        for(int k = 0; k < img.width; k++) {
+          new_img.set(j, k, img.get(k, img.height - j - 1));
+        }
+      }
+      img = new_img;
+    }
+  }
+  
+  public void resize(float new_width, float new_height, boolean binomial) {
     PImage new_img = createImage(round((float)img.width * (new_width / 100.0f)), round((float)img.height * (new_height / 100.0f)), RGB);
     float width_proportion =  (new_width / 100f);
     float height_proportion =  (new_height / 100f);
@@ -463,6 +475,77 @@ class converter {
       }
     }
     img = new_img;
+  }
+
+  public void rotate(float angle){
+    
+    double radian_angle = Math.toRadians(angle);
+    double[][] corners = TD(img.height, img.width, radian_angle);
+    int sizeX, sizeY;
+    double[] max_corners = arrayMax(corners);
+    double[] min_corners = arrayMin(corners);
+    double[] xyprimas = new double[2];
+    sizeX = (int)Math.ceil(Math.abs(max_corners[0] - min_corners[0]));           
+    sizeY = (int)Math.ceil(Math.abs(max_corners[1] - min_corners[1]));
+    output_img = null;
+    output_img = createImage(sizeX, sizeY, RGB);
+    
+    for(double i = 0; i < sizeX; i++){
+      for(double j = 0; j < sizeY; j++){
+       xyprimas = TI(i + min_corners[0], j + min_corners[1], radian_angle);
+       //output_img.set((int)i, (int)j, color(0));
+       output_img.set((int)i, (int)j, img.get((int)xyprimas[0], (int)xyprimas[1]));
+      }
+    }
+    
+  }
+  
+  public double[][] TD(int h, int w, double angle){
+    double[][] corners = new double[4][2];
+    corners[0][0] = 0 * Math.cos(angle) - 0 * Math.sin(angle);
+    corners[0][1] = 0 * Math.sin(angle) +  0 * Math.cos(angle);
+    corners[1][0] = w * Math.cos(angle) - 0 * Math.sin(angle);
+    corners[1][1] = w * Math.sin(angle) +  0 * Math.cos(angle);
+    corners[2][0] = 0 * Math.cos(angle) - h * Math.sin(angle);
+    corners[2][1] = 0 * Math.sin(angle) +  h * Math.cos(angle);
+    corners[3][0] = w * Math.cos(angle) - h * Math.sin(angle);
+    corners[3][1] = w * Math.sin(angle) +  h * Math.cos(angle);
+    return corners;
+  }
+  
+  public double[] TI(double x, double y, double angle){
+    double[] xy = new double[2];
+    xy[0] = x * Math.cos(-angle) - y * Math.sin(-angle);
+    xy[1] = x * Math.sin(-angle) +  y * Math.cos(-angle);
+    return xy;
+  }
+  
+  public double[] arrayMax(double[][] arr) {
+    double maxx = Double.NEGATIVE_INFINITY;
+    double maxy = Double.NEGATIVE_INFINITY;
+
+    for(int i = 0; i < 4; i++){
+      maxx = Math.max(maxx, arr[i][0]);
+    }
+    for(int i = 0; i < 4; i++){
+      maxy = Math.max(maxy, arr[i][1]);
+    }
+    double[] result = {maxx,maxy};
+    return result;
+  }
+
+  public double[] arrayMin(double[][] arr) {
+    double minx = Double.POSITIVE_INFINITY;
+    double miny = Double.POSITIVE_INFINITY;
+
+    for(int i = 0; i < 4; i++){
+      minx = Math.min(minx, arr[i][0]);
+    }
+    for(int i = 0; i < 4; i++){
+      miny = Math.min(miny, arr[i][1]);
+    }
+    double[] result = {minx,miny};
+    return result;
   }
 
   public void draw_image() {

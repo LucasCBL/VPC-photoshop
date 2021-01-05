@@ -104,6 +104,38 @@ void cross_neighbours(PApplet app, GWinData windata) {
   app.fill(0);
 }
 
+void resize_input(PApplet app, GWinData windata) {
+  app.background(200);
+  app.textSize(15);
+  app.text("Dimension actual: Ancho =  " + menu.transform.img.width + ", alto = " + menu.transform.img.height, 10, 15);
+  app.text("Introduca el el porcentage de cambio en formato (width%) (height%) ", 10, 30);
+  app.text("ej: 50 50 para reducirla a la mitad", 10, 45);
+  app.fill(0);
+}
+
+void bilineal_or_nn(PApplet app, GWinData windata) {
+  app.background(200);
+  app.textSize(15);
+  app.text("Escriba 1 para usar una aproximacion \n por vecinos y 2 para bilineal", 10, 15);
+  app.fill(0);
+}
+
+void rotate_input(PApplet app, GWinData windata) {
+  app.background(200);
+  app.textSize(20);
+  app.text("Introduzca el ángulo a rotar: ", 10, 30); 
+  app.fill(0);
+}
+
+void rotate_90_input(PApplet app, GWinData windata) {
+  app.background(200);
+  app.textSize(15);
+  app.text("Introduzca el numero de rotaciones(1=90, 2=180, 3=270)", 10, 30); 
+  app.fill(0);
+}
+
+
+
 void graphs(PApplet app, GWinData windata) {
   menu.transform.cross_section(app, menu.initial_cross_p, menu.final_cross_p, menu.neighbours);
 }
@@ -206,6 +238,27 @@ public void handleButtonEvents(GButton button, GEvent event) {
     } else if (button == menu.cross_sect_btn) {
       menu.deactivate_all_flags();
       menu.cross_flag = true;
+    } else if (button == menu.resize_btn) {
+      menu.deactivate_all_flags();
+      menu.resize_flag = true;
+      
+      text_field = GWindow.getWindow(this, "Input window", 100, 50, 500, 100, JAVA2D);
+      GTextField x = new GTextField(text_field, 0, 50, 500, 50);
+      text_field.addDrawHandler(this, "resize_input");
+    } else if(button == menu.rotate_btn) {
+      menu.deactivate_all_flags();
+      menu.rotate_flag = true;
+      
+      text_field = GWindow.getWindow(this, "Input window", 100, 50, 500, 100, JAVA2D);
+      GTextField x = new GTextField(text_field, 0, 50, 500, 50);
+      text_field.addDrawHandler(this, "rotate_input");
+    } else if(button  == menu.rotate_90_btn) {
+      menu.deactivate_all_flags();
+      menu.rotate_90_flag = true;
+      
+      text_field = GWindow.getWindow(this, "Input window", 100, 50, 500, 100, JAVA2D);
+      GTextField x = new GTextField(text_field, 0, 50, 500, 50);
+      text_field.addDrawHandler(this, "rotate_90_input");
     }
   }
 }
@@ -278,6 +331,30 @@ public void handleTextEvents(GEditableTextControl textcontrol, GEvent event) {
         menu.deactivate_all_flags();
       }
     
+    } else if(menu.resize_flag) {
+      if(menu.new_sizes == null) {
+        String numbers = textcontrol.getText();
+        String[] split_num = numbers.split(" ");
+        menu.new_sizes = new Float[2];
+        menu.new_sizes[0] = Float.parseFloat(split_num[0]);
+        menu.new_sizes[1] = Float.parseFloat(split_num[1]);
+        text_field.addDrawHandler(this, "bilineal_or_nn");
+      } else {
+        menu.deactivate_all_flags();
+        menu.transform.resize(menu.new_sizes[0], menu.new_sizes[0], (Integer.parseInt(textcontrol.getText()) > 1));
+        menu.new_sizes = null;
+        text_field.forceClose();
+      }
+    } else if(menu.rotate_flag) {
+      menu.deactivate_all_flags();
+      menu.transform.rotate(Float.parseFloat(textcontrol.getText()));
+      text_field.forceClose();
+      delay(100);
+      draw_output();
+    } else if(menu.rotate_90_flag) {
+      menu.deactivate_all_flags();
+      menu.transform.rotate_90(Integer.parseInt(textcontrol.getText()));
+      text_field.forceClose();
     }
 
     textcontrol.setText("");

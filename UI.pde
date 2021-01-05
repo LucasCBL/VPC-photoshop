@@ -22,11 +22,15 @@ class UI {
   public GButton hor_mirror_btn;
   public GButton transpose_btn;
   public GButton rotate_90_btn;
+  public GButton resize_btn;
+  public GButton rotate_btn;
+  
+  
   
   
   public converter transform;
   
-  // flahs para recoger inputs
+  // flags para recoger inputs
   public boolean highlight_input_flag;
   public boolean gamma_input_flag;
   public boolean lt_input_flag;
@@ -62,6 +66,16 @@ class UI {
   //Variables digitalizacion
   public int samples;
   
+  // variables resize
+  public boolean resize_flag; 
+  public Float[]  new_sizes;
+  
+  // variables rotate
+  public boolean rotate_flag;
+  
+  // variables rotate_90
+  public boolean rotate_90_flag;
+  
   private ImageTransformer canvas_;
   
   public UI(ImageTransformer canvas) {
@@ -69,7 +83,7 @@ class UI {
     canvas_ = canvas;
     transform = new converter(canvas);
     
-    float pos = width / 19;
+    float pos = width / 21;
     float size = pos * 0.9;
     
     G4P.setGlobalColorScheme(5);
@@ -85,15 +99,16 @@ class UI {
     change_gamma_btn = new GButton(canvas, pos / 2 + pos * 9, 10, size, 30, "cambiar gamma");
     cross_sect_btn = new GButton(canvas, pos / 2 + pos * 10, 10, size, 30, "Perfil");
     digital_sim_btn = new GButton(canvas, pos / 2 + pos * 11, 10, size, 30, "Simulacion digitalización");
-    save_img_btn = new GButton(canvas, pos / 2 + pos * 12, 10, size, 30, "guardar imagen");
-    save_output_btn = new GButton(canvas, pos / 2 + pos * 13, 10, size, 30, "guardar output");
+    save_img_btn = new GButton(canvas, pos / 2 + pos * 18, 10, size, 30, "guardar imagen");
+    save_output_btn = new GButton(canvas, pos / 2 + pos * 19, 10, size, 30, "guardar output");
     
     
-    vert_mirror_btn = new GButton(canvas, pos / 2 + pos * 14, 10, size, 30, "V mirror");
-    hor_mirror_btn = new GButton(canvas, pos / 2 + pos * 15, 10, size, 30, "H Mirror");
-    transpose_btn = new GButton(canvas, pos / 2 + pos * 16, 10, size, 30, "Transpose");
-    rotate_90_btn = new GButton(canvas, pos / 2 + pos * 17, 10, size, 30, "guardar output");
-    
+    vert_mirror_btn = new GButton(canvas, pos / 2 + pos * 12, 10, size, 30, "V mirror");
+    hor_mirror_btn = new GButton(canvas, pos / 2 + pos * 13, 10, size, 30, "H Mirror");
+    transpose_btn = new GButton(canvas, pos / 2 + pos * 14, 10, size, 30, "Transpose");
+    rotate_90_btn = new GButton(canvas, pos / 2 + pos * 15, 10, size, 30, "Rotar mult 90");
+    resize_btn = new GButton(canvas, pos / 2 + pos * 16, 10, size, 30, "Redimension");
+    rotate_btn = new GButton(canvas, pos / 2 + pos * 17, 10, size, 30, "Rotar");
     
     
     
@@ -115,7 +130,8 @@ class UI {
     hor_mirror_btn.fireAllEvents(true);
     transpose_btn.fireAllEvents(true);
     rotate_90_btn.fireAllEvents(true);
-    
+    rotate_btn.fireAllEvents(true);
+    resize_btn.fireAllEvents(true);
     
     deactivate_all_flags();
   }
@@ -167,6 +183,9 @@ class UI {
     cross_click_2 = false;
     digitalization_flag = false;
     digitalization_flag2 = false;
+    resize_flag = false;
+    rotate_flag = false;
+    rotate_90_flag = false;
   }
 
   public void update_image(){

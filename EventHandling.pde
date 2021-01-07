@@ -22,6 +22,19 @@ public void draw_out_image(PApplet app, GWinData windata) {
   menu.transform.reload_acc_histogram(app, menu.transform.output_img, (float)menu.transform.output_img.width, 300.0, 400.0, 280.0);
 }
 
+public void draw_rotated_output() {
+  int w_height = menu.transform.output_img.height > 600 ? menu.transform.output_img.height : 600;
+  GWindow output =  GWindow.getWindow(this, "output image", 0, 0, 400 + menu.transform.output_img.width, w_height, JAVA2D);
+  output.addDrawHandler(this, "draw_rotated_out_image");
+}
+
+
+public void draw_rotated_out_image(PApplet app, GWinData windata) {
+  menu.transform.draw_out_image(app);
+  menu.transform.reload_histogram(app, menu.transform.output_img, (float)menu.transform.output_img.width, 0.0, 400.0, 280.0, true);
+  menu.transform.reload_acc_histogram(app, menu.transform.output_img, (float)menu.transform.output_img.width, 300.0, 400.0, 280.0, true);
+}
+
 public void draw_second() {
   int w_height = menu.transform.second_img.height > 600 ? menu.transform.second_img.height : 600;
   GWindow output =  GWindow.getWindow(this, "second image", 0, 0, 400 + menu.transform.second_img.width, w_height, JAVA2D);
@@ -341,16 +354,23 @@ public void handleTextEvents(GEditableTextControl textcontrol, GEvent event) {
         text_field.addDrawHandler(this, "bilineal_or_nn");
       } else {
         menu.deactivate_all_flags();
-        menu.transform.resize(menu.new_sizes[0], menu.new_sizes[0], (Integer.parseInt(textcontrol.getText()) > 1));
+        menu.transform.resize(menu.new_sizes[0], menu.new_sizes[1], (Integer.parseInt(textcontrol.getText()) > 1));
         menu.new_sizes = null;
         text_field.forceClose();
       }
     } else if(menu.rotate_flag) {
-      menu.deactivate_all_flags();
-      menu.transform.rotate(Float.parseFloat(textcontrol.getText()));
-      text_field.forceClose();
-      delay(100);
-      draw_output();
+      if(menu.rotation_angle == 0) {
+        menu.rotation_angle = Float.parseFloat(textcontrol.getText());
+        text_field.addDrawHandler(this, "bilineal_or_nn");
+      } else {
+        menu.transform.rotate(menu.rotation_angle, Integer.parseInt(textcontrol.getText()) == 2);
+        text_field.forceClose();
+        menu.deactivate_all_flags();
+        delay(100);
+        print(menu.transform.rotated_corners);
+        draw_rotated_output();
+      }
+     
     } else if(menu.rotate_90_flag) {
       menu.deactivate_all_flags();
       menu.transform.rotate_90(Integer.parseInt(textcontrol.getText()));

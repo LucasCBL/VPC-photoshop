@@ -11,6 +11,7 @@ class converter {
   private int drawable_x;
   private int drawable_y;
   private PApplet canvas_;
+  public int rotated_corners;
 
   public converter(PApplet canvas) {
     canvas_ = canvas;
@@ -431,34 +432,27 @@ class converter {
     float width_proportion =  (new_width / 100f);
     float height_proportion =  (new_height / 100f);
     if(!binomial) {
-      print("\n neighbours");
-      int width_neighbours = round(new_width / 100);
-      int height_neighbours = round(new_height / 100);
-      print("\n widht" + width_neighbours + "\n height: " + height_neighbours + "\n");
       for(int i = 0; i < new_img.width ; i++) {
         for(int j = 0; j < new_img.height; j++) {
-          float neighbours_sum = 0;
-          int neighbours_count = 0;
-          for (int r = -width_neighbours; r <= width_neighbours; r++){
-            int row = round((float)i / (new_width / 100f)) - r;
-            if(row >= 0 && row < img.width) {
-              for (int c = -height_neighbours; c <= height_neighbours; c++){
-                int col = round((float)j / (new_height / 100f)) - c;
-                if(col >= 0 && col < img.height) {
-                  neighbours_count++;
-                  neighbours_sum += red(img.get(row,col));
-                  //print("\n row: " + row + " col: " + col + "\n");
-                  //print(1);
-                }
-              }
-            }
-          }
+
+          int row = round((float)i / (new_width / 100f));
+          int col = round((float)j / (new_height / 100f));
           //print(neighbours_count + "\n");
           //print(round(neighbours_sum / neighbours_count) + "\n");
-          new_img.set(i, j, color(round(neighbours_sum / (float)neighbours_count)));
+          new_img.set(i, j, img.get(row, col));
         }
       }
     } else {
+      img.loadPixels();
+      float[] gray_pixels = new float[img.pixels.length];
+      for(int i = 0 ; i < img.pixels.length; i++) {
+          gray_pixels[i] = red(img.pixels[i]);
+         /*
+          if(gray_pixels[i] != 169) {
+            print("\n" + gray_pixels[i] + "\n");
+          }
+          */
+      }
        for(int i = 0; i < new_img.width ; i++) {
           for(int j = 0; j < new_img.height; j++) { 
             float center_x = i / width_proportion;
@@ -467,18 +461,64 @@ class converter {
             int y1 = round(center_y) > center_y ?  round(center_y) - 1: round(center_y) ;
             int x2 = round(center_x) > center_x ?  round(center_x) : round(center_x) + 1;
             int y2 = round(center_y) > center_y ?  round(center_y) : round(center_y) + 1;
-            float r_y1 = (((float)x2 - center_x) / (float)(x2 - x1)) * red(img.get(x1,y1)) + ((center_x - (float)x1) / (float)(x2 - x1)) * red(img.get(x2,y1));
-            float r_y2 = (((float)x2 - center_x) / (float)(x2 - x1)) * red(img.get(x1,y2)) + ((center_x - (float)x1) / (float)(x2 - x1)) * red(img.get(x2,y2));
-            float value = (((float)y2 - center_y) / (float)(y2 - y1)) * r_y1 + ((center_y - (float)y1) / (float)(y2 - y1)) * r_y2;
-            new_img.set(i,j,color(value));
+            float c1, c2, c3, c4;
+            if(x1 < 0 ||x1 >= img.width || y1 < 0 ||y1 >= img.height) {
+              c1 = 0;
+            } else {
+              c1 = gray_pixels[y1 * img.width + x1];
+            }
+            if(x1 < 0 ||x1 >= img.width || y2 < 0 ||y2 >= img.height) {
+              c2 = 0;
+            } else {
+              c2 = gray_pixels[y2 * img.width + x1];
+            }
+            if(x2 < 0 ||x2 >= img.width || y1 < 0 ||y1 >= img.height) {
+              c3 = 0;
+            } else {
+              c3 = gray_pixels[y1 * img.width + x2];
+            }
+            if(x2 < 0 || x2 >= img.width || y2 < 0 ||y2 >= img.height) {
+              c4 = 0;
+            } else {
+              c4 = gray_pixels[y2 * img.width + x2];
+            }
+
+            float r_y1 = (((float)x2 - center_x) / (float)(x2 - x1)) * c1 + ((center_x - (float)x1) / (float)(x2 - x1)) * c2;
+            float r_y2 = (((float)x2 - center_x) / (float)(x2 - x1)) * c3 + ((center_x - (float)x1) / (float)(x2 - x1)) * c4;
+            float value = ((((float)y2 - center_y) / (float)(y2 - y1)) * r_y1) + (((center_y - (float)y1) / (float)(y2 - y1)) * r_y2);
+           
+            /*if((c1 != 169 || c2 != 169 ||c3 != 169 || c4 != 169) && y2 < img.height && y2 > 0 && y1 < img.height && y1 > 0 && x2 < img.width && x2 > 0 && x1 < img.width && x1 > 0) {
+              print("\nr1 " +   r_y1);
+              print("\nr2 " +   r_y2);
+              print("\n colours = " + c1 + ", " + c2 + ", " + c3 + ", " + c4 + ", ");
+              print("\n coords = " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", ");
+              print("\n" +  value);
+            } else 
+            if(value == 255) {
+              print("\nr1 " +   r_y1);
+              print("\nr2 " +   r_y2);
+              print("\n colours = " + c1 + ", " + c2 + ", " + c3 + ", " + c4 + ", ");
+              print("\n coords = " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", ");
+              print("\n" +  value);
+            }
+            */
+            
+            
+            new_img.set(i,j,color(round(value)));
         }
       }
     }
     img = new_img;
   }
-
-  public void rotate(float angle){
-    
+  
+  public void rotate(float angle) {
+    rotate(angle, false);
+  }
+  
+  public void rotate(float angle, boolean bilineal){
+    if(bilineal){
+      print("bilineal\n");
+    }
     double radian_angle = Math.toRadians(angle);
     double[][] corners = TD(img.height, img.width, radian_angle);
     int sizeX, sizeY;
@@ -489,12 +529,52 @@ class converter {
     sizeY = (int)Math.ceil(Math.abs(max_corners[1] - min_corners[1]));
     output_img = null;
     output_img = createImage(sizeX, sizeY, RGB);
-    
+    rotated_corners = 0;
     for(double i = 0; i < sizeX; i++){
       for(double j = 0; j < sizeY; j++){
        xyprimas = TI(i + min_corners[0], j + min_corners[1], radian_angle);
        //output_img.set((int)i, (int)j, color(0));
-       output_img.set((int)i, (int)j, img.get((int)xyprimas[0], (int)xyprimas[1]));
+       if(round((int)xyprimas[0]) < 0 || round((int)xyprimas[0]) >= img.width || round((int)xyprimas[1]) < 0 || round((int)xyprimas[1]) >= img.height) {
+         output_img.set((int)i, (int)j, 0);
+         rotated_corners++;
+       } else {
+         if(!bilineal) {
+           output_img.set((int)i, (int)j, img.get(round((float)xyprimas[0]), round((float)xyprimas[1])));
+         } else {
+           float center_x = (float)xyprimas[0];
+           float center_y = (float)xyprimas[1];
+           int x1 = round(center_x) > center_x ?  round(center_x) - 1: round(center_x) ;
+           int y1 = round(center_y) > center_y ?  round(center_y) - 1: round(center_y) ;
+           int x2 = round(center_x) > center_x ?  round(center_x) : round(center_x) + 1;
+           int y2 = round(center_y) > center_y ?  round(center_y) : round(center_y) + 1;
+           float c1, c2, c3, c4;
+           if(x1 < 0 ||x1 >= img.width || y1 < 0 ||y1 >= img.height) {
+              c1 = 0;
+            } else {
+              c1 = red(img.get(x2,y1));
+            }
+            if(x1 < 0 ||x1 >= img.width || y2 < 0 ||y2 >= img.height) {
+              c2 = 0;
+            } else {
+              c2 = red(img.get(x2,y1));
+            }
+            if(x2 < 0 ||x2 >= img.width || y1 < 0 ||y1 >= img.height) {
+              c3 = 0;
+            } else {
+              c3 = red(img.get(x2,y1));
+            }
+            if(x2 < 0 || x2 >= img.width || y2 < 0 ||y2 >= img.height) {
+              c4 = 0;
+            } else {
+              c4 = red(img.get(x2,y1));
+            }
+           float r_y1 = (((float)x2 - center_x) / (float)(x2 - x1)) * c1 + ((center_x - (float)x1) / (float)(x2 - x1)) * c2;
+           float r_y2 = (((float)x2 - center_x) / (float)(x2 - x1)) * c3 + ((center_x - (float)x1) / (float)(x2 - x1)) * c4;
+           float value = ((((float)y2 - center_y) / (float)(y2 - y1)) * r_y1) + (((center_y - (float)y1) / (float)(y2 - y1)) * r_y2);
+           output_img.set((int)i, (int)j, color(value));
+         }  
+       }
+       
       }
     }
     
@@ -561,12 +641,19 @@ class converter {
     app.background(200);
     app.image(second_img, 0, 0);
   }
-
-
+  
+  
   void reload_histogram(PApplet app, PImage image, float x, float y, float width_h, float height_h) {
+    reload_histogram(app, image, x, x, width_h, height_h, false);
+  }
+
+  void reload_histogram(PApplet app, PImage image, float x, float y, float width_h, float height_h, boolean rotated) {
     float[] values = new float[256];
     for (int i = 0; i < 256; i++) {
       values[i] = 0;
+    }
+    if(rotated) {
+      values[0] = -rotated_corners;
     }
     for (int i = 0; i < image.pixels.length; i++) {
       values[round(red(image.pixels[i]))]++;
@@ -579,12 +666,18 @@ class converter {
   }
 
 
-
-
   void reload_acc_histogram(PApplet app, PImage image, float x, float y, float width_h, float height_h) {
+     reload_acc_histogram(app, image, x, y, width_h, height_h, false);
+  }
+
+
+  void reload_acc_histogram(PApplet app, PImage image, float x, float y, float width_h, float height_h, boolean rotated) {
     float[] values = new float[256];
     for (int i = 0; i < 256; i++) {
       values[i] = 0;
+    }
+    if(rotated) {
+      values[0] = -rotated_corners;
     }
     for (int i = 0; i < image.pixels.length; i++) {
       values[round(red(image.pixels[i]))]++;

@@ -72,6 +72,7 @@ class UI {
   
   // variables rotate
   public boolean rotate_flag;
+  public Float rotation_angle;
   
   // variables rotate_90
   public boolean rotate_90_flag;
@@ -142,10 +143,12 @@ class UI {
       fill(0);
       stroke(0);
       update_image();
+      update_image();
+      update_image();
       text("Histograma", width * 0.07,  (float)height * 1.04 - menu.transform.drawable_y );
       text("Histograma acumulativo", width * 0.07,  (float)height * 1.04 - menu.transform.drawable_y  + (float)height * 0.3);
       transform.reload_histogram(canvas_, menu.transform.img, 0.0, (float)height - menu.transform.drawable_y, (float)width * 0.29, (float)height * 0.3);
-      transform.reload_acc_histogram(canvas_, menu.transform.img, 0.0, (float)height - menu.transform.drawable_y + (float)height * 0.31, (float)width * 0.29, (float)height * 0.3);
+      transform.reload_acc_histogram(canvas_, menu.transform.img, 0.0, ((float)height - menu.transform.drawable_y + (float)height * 0.31) , (float)width * 0.29, (float)height * 0.3);
       textSize(20);
       text(menu.transform.mouse_position_in_image(), 15.0, (float)height - 80);
       text("Brillo: " + menu.transform.get_brightness(), 15.0, (float)height - 120);
@@ -186,12 +189,13 @@ class UI {
     resize_flag = false;
     rotate_flag = false;
     rotate_90_flag = false;
+    rotation_angle = 0f;
   }
 
   public void update_image(){
 
-    menu.transform.img.loadPixels();
+    //menu.transform.img.loadPixels();
     menu.transform.draw_image();
-    menu.transform.img.updatePixels();
+    //menu.transform.img.updatePixels();
   }
 }
